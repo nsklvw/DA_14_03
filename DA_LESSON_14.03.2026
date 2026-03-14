@@ -1,0 +1,110 @@
+set search_path to lessons_database;
+
+select * from employees;
+
+select 	
+	sum(list_price) as sum_list_price,
+	min(list_price) as mun_list_price,
+	max(list_price) as max_list_price,
+	avg(list_price) as avg_list_price,
+	count(list_price) as count_list_price
+from products;
+
+-- найти продукт с минимальной ценой
+
+select product_name
+from products
+where list_price = (select min(list_price) from products);
+
+-- найти продукт, чья цена больше средней
+
+select product_name
+from products
+where list_price > (select avg(list_price) from products);
+
+-- написать запрос, который выводит продукты с макс и мин ценой
+
+select product_name, list_price
+from products
+where list_price = (select min(list_price) from products)
+or list_price = (select max(list_price) from products);
+
+-- написать запрос, который выводит название товара, категорию и цену
+-- вывести только те товары, которые являются самыми дорогими в своей категории
+ 
+-- 1) написать запрос, который находит максимальную цену на каждую категорию
+-- 2) соотнести "таблицу" из первого пункта к таблице products и оставить только товары с максимальной ценой в категории
+
+select category_id, max(list_price) as max_list_price
+from products
+group by category_id;
+
+select
+	t1.product_name,
+	t1.list_price,
+	t1.category_id
+from products t1
+inner join (
+	select
+		category_id,
+		max(list_price) as max_list_price
+	from products
+	group by category_id
+) t2
+on t1.category_id = t2.category_id
+and t1.list_price = t2.max_list_price;
+
+-- написать запрос, который выводит кличество продуктов в каждой категории
+
+select 
+	category_id,
+	count(product_name) as count_product_name
+from products
+group by category_id;
+
+-- 1)без null 2) с null
+
+select 
+	category_id,
+	count(*) as count_product_name
+from products
+group by category_id;
+
+-- написать запрос, который находит количество сотрудников в каждом job_title
+-- и выводит только те job_title, где больше 10 сотрудников
+
+select 
+	job_title,
+	count(job_title) as jt
+from employees
+group by job_title;
+
+select *
+from (
+	select 
+	job_title,
+	count(job_title) as jt
+	from employees
+	group by job_title) t1
+	where jt > 10;
+
+select 
+	job_title,
+	count(job_title) as jt
+from employees
+group by job_title
+having count(job_title) > 10;
+
+-- написать запрос, который выводит сотрудников (имя и фамилию), которые работают на такой job_title, у которого больше 10 сотрудников
+
+select first_name, last_name, job_title
+from employees
+where job_title in (
+	select job_title
+	from employees
+	group by job_title
+	having count(job_title) > 10);
+
+
+
+
