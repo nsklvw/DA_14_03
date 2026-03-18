@@ -32,7 +32,7 @@ select
 from order_items as t1
 join products as t2
 on t1.product_id = t2.product_id
-group by t2.product_name, t2.list_price;
+group by t2.product_id;
 
 задача 5. продажи каждого продавца
 
@@ -53,10 +53,7 @@ join orders as t2
 on t1.order_id = t2.order_id
 join employees as t3
 on t2.salesman_id = t3.employee_id
-group by 
-	t3.first_name,
-	t3.last_name,
-	t3.job_title;
+group by t3.employee_id;
 
 задача 6. общая стоимость товаров на складе 
 
